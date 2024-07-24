@@ -14,8 +14,12 @@ export default function page() {
   return (
     <div className="flex justify-center mt-[100px]">
         <div className="card bg-slate-200 w-96 min-h-96 shadow-xl">
-          <div className="pt-14">
-              <h3 className="text-zinc-900 font-bold text-xl pt-[0.2rem] text-center">Login</h3>
+          <div className="pt-2 px-2 w-full text-end">
+            <button type="button" onClick={() => router.push('/')} className="px-4 text-slate-900 font-bold">X</button>
+          </div>
+
+          <div className="pt-2">
+              <h1 className="text-zinc-900 font-bold text-xl pt-[0.2rem] text-center">Login</h1>
           </div>
           
           <div className="card-body items-center justify-center text-center">
@@ -24,7 +28,7 @@ export default function page() {
                className="" 
                onSubmit={(e) => {
                 e.preventDefault();
-                
+
                 authService.login({
                   email,
                   password,
