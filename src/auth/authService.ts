@@ -1,3 +1,4 @@
+import { getUser } from "./getUser";
 import { tokenService } from "./tokenService";
 
 export const authService = {
@@ -18,7 +19,10 @@ export const authService = {
             
             const body = await respostaDoServidor.json();
 
+            console.log(body)
+
             tokenService.save(body.token)
+            getUser.save(body.user.name)
         })
     },
 

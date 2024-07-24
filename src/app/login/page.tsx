@@ -33,7 +33,7 @@ export default function page() {
                   email,
                   password,
                 }).then(() => {
-                  router.push('/register')
+                  router.push('/dash')
                 }).catch(() => {
                   alert('Credenciais inválidas')
                 })
