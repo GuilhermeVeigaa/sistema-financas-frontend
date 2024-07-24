@@ -2,6 +2,10 @@
 
 import React, { useEffect, useState } from 'react'
 import { getUser } from '@/auth/getUser';
+import Card from '@/components/Card';
+import Image from 'next/image';
+import { FaRegArrowAltCircleUp, FaRegArrowAltCircleDown, FaDollarSign } from 'react-icons/fa';
+
 
 export default function page() {
 
@@ -38,6 +42,50 @@ export default function page() {
               </div>
           </div>
       </header>
+
+      <section className='flex mt-5 gap-2 mx-2'>
+          <Card>
+            <div className='flex'>
+              <p className='text-black font-semibold'>Entradas</p>
+
+              <picture>
+                <FaRegArrowAltCircleUp />
+              </picture>
+            </div>
+
+            <div className='text-center pt-5'>
+              <span className='font-bold text-lg text-green-300'>valor</span>
+            </div>
+          </Card>
+
+          <Card>
+          <div className='flex'>
+              <p className='text-black font-semibold'>Saídas</p>
+
+              <picture>
+                <FaRegArrowAltCircleDown />
+              </picture>
+            </div>
+
+            <div className='text-center pt-5'>
+              <span className='font-bold text-lg text-red-700'>Valor</span>
+            </div>
+          </Card>
+
+          <Card>
+          <div className='flex'>
+              <p className='text-black font-semibold'>Total</p>
+
+              <picture>
+                <FaDollarSign />
+              </picture>
+            </div>
+
+            <div className='text-center pt-5'>
+              <span className='font-bold text-lg text-black'>Valor</span>
+            </div>
+          </Card>
+      </section>
     </main>
   )
 }
