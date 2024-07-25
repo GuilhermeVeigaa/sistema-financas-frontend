@@ -42,7 +42,7 @@ export default function page() {
 
   return (
     <main>
-      <header className='w-full h-24 bg-purple-800 flex'>
+      <header className='w-full h-24 bg-red-800 flex'>
           <div className='flex w-full justify-start items-center px-10 py-5'>
             <p className='font-semibold text-white'>
               Seja Bem-Vindo
@@ -55,7 +55,7 @@ export default function page() {
                   <p className='font-semibold text-white'>
                     Usuário:
                   </p>
-                  <p className='font-bold text-green-400 pe-12'>{userName}</p>
+                  <p className='font-bold text-white pe-12'>{userName}</p>
                 </div>
 
                 <picture className='rounded-full'>
@@ -76,7 +76,7 @@ export default function page() {
             </div>
 
             <div className='text-center pt-5'>
-              <span className='font-bold text-lg text-green-300'>valor</span>
+              <span className='font-bold text-lg text-green-600'>Valor</span>
             </div>
           </Card>
 

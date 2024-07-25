@@ -101,7 +101,7 @@ export default function ExpensesForm({ onEdit, setOnEdit, getExpenses }:any) {
             <div className='flex gap-1'>
                 <input 
                 type="checkbox" 
-                className="checkbox checkbox-success bg-green-300"
+                className="checkbox checkbox-success bg-gray-300 border-gray-500"
                 checked={type === "entrada"}
                 onChange={() => handleTypeChange("entrada")} />
                 <span>
@@ -112,10 +112,10 @@ export default function ExpensesForm({ onEdit, setOnEdit, getExpenses }:any) {
             <div className='flex gap-1'>
                 <input 
                 type="checkbox" 
-                className="checkbox checkbox-success bg-green-300"
+                className="checkbox checkbox-error bg-gray-300 border-gray-500"
                 checked={type === "saida"}
                 onChange={() => handleTypeChange("saida")} />
-                <span>
+                <span className="text-zinc-800 font-semibold">
                 Saída
                 </span>
             </div>
