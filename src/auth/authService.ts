@@ -44,5 +44,24 @@ export const authService = {
 
             const body = await respostaDoServidor.json()
         })
+    },
+
+    async addExpenses({ desc, value }: any) {
+        console.log("sending data", {desc, value});
+        return fetch("http://localhost:8800/expenses", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                desc,
+                value,
+            }),
+        }).then(async (response) => {
+            if (!response.ok) {
+                throw new Error('Erro ao adicionar despesas')
+            }
+            return response.json()
+        })
     }
 };

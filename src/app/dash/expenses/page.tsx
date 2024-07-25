@@ -3,20 +3,42 @@
 import React, { useEffect, useState } from 'react'
 import { getUser } from '@/auth/getUser';
 import Card from '@/components/Card';
-import Image from 'next/image';
 import { FaRegArrowAltCircleUp, FaRegArrowAltCircleDown, FaDollarSign } from 'react-icons/fa';
+import ExpensesForm from '@/components/ExpensesForm';
+import ExpensesGrid from '@/components/ExpensesGrid';
+import axios from 'axios';
+
+interface Expense {
+  desc: string;
+  value: number;
+}
 
 
 export default function page() {
 
   const [userName, setUserName] = useState('');
+  const [expenses, setExpenses] = useState<Expense[]>([])
+  const [onEdit, setOnEdit] = useState(null)
 
   useEffect(() => {
     const name = getUser.get()
     if (name) {
       setUserName(name)
     }
-  })
+  }, [])
+
+  const getExpenses = async () => {
+    try {
+      const res = await axios.get<Expense[]>("http://localhost:8800/expenses")
+      setExpenses(res.data.sort((a, b) => a.desc.localeCompare(b.desc)))
+    } catch (err) {
+      console.error("erro ao carreagar despesas", err)
+    }
+  }
+
+  useEffect(() => {
+    getExpenses()
+  }, [])
 
   return (
     <main>
@@ -85,6 +107,14 @@ export default function page() {
               <span className='font-bold text-lg text-black'>Valor</span>
             </div>
           </Card>
+      </section>
+
+      <section>
+        <ExpensesForm onEdit={onEdit} setOnEdit={setOnEdit} getExpenses={getExpenses}/>
+      </section>
+
+      <section>
+        <ExpensesGrid expenses={expenses} setExpenses={setExpenses} setOnEdit={setOnEdit}/>
       </section>
     </main>
   )
