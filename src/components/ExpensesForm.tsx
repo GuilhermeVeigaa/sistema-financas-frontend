@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { authService } from "@/auth/authService";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -13,32 +13,68 @@ export default function ExpensesForm({ onEdit, setOnEdit, getExpenses }:any) {
 
     type CreateExpensesSchema = z.infer<typeof CreateExpensesSchema>
 
-    const { register, handleSubmit } = useForm<CreateExpensesSchema>({
+    const { register, handleSubmit, setValue } = useForm<CreateExpensesSchema>({
       resolver: zodResolver(CreateExpensesSchema),
     });
+
+    const ref = useRef<HTMLFormElement>(null)
+
+    useEffect(() => {
+      if (onEdit) {
+        setValue("desc", onEdit.desc);
+        setValue("value", onEdit.value)
+      }
+    },[onEdit, setValue])
 
     function handleCreateExpenses(data: CreateExpensesSchema, e: any) {
       e.preventDefault()
 
+      const expenses = ref.current
+
+      if (!expenses.desc.value || !expenses.value.value) {
+        return alert("Preencha todos os campos")
+      }
+
       const desc = data.desc;
       const value = data.value;
 
-      authService.addExpenses({
-        desc,
-        value,
-      })
-      .then( () => {
-        alert("Despesa/Receita criada com sucesso")
-        getExpenses()
-      })
-      .catch((error) => {
-        alert(error.message || "Erro ao criar despesa")
-        console.log(error)
-      })
+      if (onEdit) {
+        const id = onEdit.id;
+        authService.updateExpenses({
+          desc,
+          value,
+          id,
+        })
+        .then( () => {
+          alert("Despesa/Receitra atualizada com sucesso")
+          getExpenses()
+          setOnEdit(null)
+        })
+        .catch((err) => {
+          alert(err.message || "Erro ao atualizar despesa")
+          console.log(err)
+        })
+      } else {
+
+        authService.addExpenses({
+          desc,
+          value,
+        })
+        .then( () => {
+          alert("Despesa/Receita criada com sucesso")
+          getExpenses()
+          setOnEdit(null)
+        })
+        .catch((error) => {
+          alert(error.message || "Erro ao criar despesa")
+          console.log(error)
+        })
+      }
     };
 
+
   return (
-    <form onSubmit={handleSubmit(handleCreateExpenses)} className="max-w-[1120px] bg-white m-5 w-[98%] py-4 gap-2 flex justify-around">
+    <form ref={ref} onSubmit={handleSubmit(handleCreateExpenses)} className="max-w-[1120px] bg-white m-5 w-[98%] py-4 gap-2 flex justify-around">
         <div className="flex flex-col">
             <span className="text-zinc-950 font-semibold">Descrição</span>
 

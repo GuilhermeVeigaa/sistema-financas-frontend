@@ -63,5 +63,25 @@ export const authService = {
             }
             return response.json()
         })
+    },
+
+    async updateExpenses({ desc, value, id }: any){
+        console.log("Sending data", { desc, value });
+
+        return fetch("http://localhost:8800/expenses" + id, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                desc,
+                value,
+            }),
+        }).then(async (response) => {
+            if (!response.ok) {
+                throw new Error('Erro ao atualizar despesas')
+            }
+            return response.json();
+        }) 
     }
 };
