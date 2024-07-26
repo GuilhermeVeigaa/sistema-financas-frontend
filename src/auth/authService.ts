@@ -46,8 +46,8 @@ export const authService = {
         })
     },
 
-    async addExpenses({ desc, value }: any) {
-        console.log("sending data", {desc, value});
+    async addExpenses({ desc, value, type }: any) {
+        console.log("sending data", {desc, value, type});
         return fetch("http://localhost:8800/expenses", {
             method: 'POST',
             headers: {
@@ -56,6 +56,7 @@ export const authService = {
             body: JSON.stringify({
                 desc,
                 value,
+                type,
             }),
         }).then(async (response) => {
             if (!response.ok) {
@@ -65,7 +66,7 @@ export const authService = {
         })
     },
 
-    async updateExpenses({ desc, value, id }: any){
+    async updateExpenses({ desc, value, type,id }: any){
         console.log("Sending data", { desc, value });
 
         return fetch("http://localhost:8800/expenses" + id, {
@@ -76,6 +77,7 @@ export const authService = {
             body: JSON.stringify({
                 desc,
                 value,
+                type,
             }),
         }).then(async (response) => {
             if (!response.ok) {

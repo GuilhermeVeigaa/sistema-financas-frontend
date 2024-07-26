@@ -8,7 +8,7 @@ export default function ExpensesForm({ onEdit, setOnEdit, getExpenses }:any) {
 
     const CreateExpensesSchema = z.object({
       desc: z.string().min(1, "Descrição obrigatória"),
-      value: z.coerce.number().min(1, "Valor obrigatório")
+      value: z.coerce.number().min(1, "Valor obrigatório"),
     });
 
     type CreateExpensesSchema = z.infer<typeof CreateExpensesSchema>
@@ -39,6 +39,7 @@ export default function ExpensesForm({ onEdit, setOnEdit, getExpenses }:any) {
         authService.updateExpenses({
           desc,
           value,
+          type,
           id,
         })
         .then( () => {
@@ -56,6 +57,8 @@ export default function ExpensesForm({ onEdit, setOnEdit, getExpenses }:any) {
         authService.addExpenses({
           desc,
           value,
+          type,
+          
         })
         .then( () => {
           alert("Despesa/Receita criada com sucesso")
@@ -104,7 +107,7 @@ export default function ExpensesForm({ onEdit, setOnEdit, getExpenses }:any) {
                 className="checkbox checkbox-success bg-gray-300 border-gray-500"
                 checked={type === "entrada"}
                 onChange={() => handleTypeChange("entrada")} />
-                <span>
+                <span className="text-zinc-800 font-semibold">
                 Entrada
                 </span>
             </div>
