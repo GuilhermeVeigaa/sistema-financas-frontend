@@ -8,6 +8,8 @@ import ExpensesForm from '@/components/ExpensesForm';
 import ExpensesGrid from '@/components/ExpensesGrid';
 import axios from 'axios';
 import { tokenService } from '@/auth/tokenService';
+import UserImage from '@/components/UserImage';
+import { useRouter } from 'next/navigation';
 
 
 interface Expense {
@@ -25,9 +27,24 @@ export default function page() {
 
   const [valuesByType, SetValuesByType] = useState<{ [key: string]: number[] }>({});
   const [totalByType, setTotalByType] = useState<{ [key: string]: number }>({});
+
+  const [loading, setLoading] = useState(true);
   
   const [entrada, setEntrada] = useState(0);
   const [saida, setSaida] = useState(0);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = tokenService.get();
+
+    if (!token) {
+      router.push('/login');
+      return;
+    } else {
+      setLoading(false);
+    }
+  }, [router])
 
   useEffect(() => {
     const name = getUser.get()
@@ -101,9 +118,14 @@ export default function page() {
     setSaida(totalSaida);
   }, [expenses]);
 
+  if (loading) {
+    return <div className="flex justify-center text-red-500 font-bold text-9xl">Loading...</div>
+  }
+
+
   return (
     <main>
-      <header className='w-full h-24 bg-red-800 flex'>
+      <header className='w-full h-28 bg-red-800 flex'>
           <div className='flex w-full justify-start items-center px-10 py-5'>
             <p className='font-semibold text-white'>
               Seja Bem-Vindo
@@ -111,22 +133,22 @@ export default function page() {
           </div>
 
           <div className='flex w-full justify-end items-center px-10 py-5'>
-              <div className='flex justify-between'>
+              <div className='flex justify-end gap-28'>
                 <div className='flex gap-2'>
                   <p className='font-semibold text-white'>
                     Usuário:
                   </p>
                   <p className='font-bold text-white pe-12'>{userName}</p>
                 </div>
-
-                <picture className='rounded-full'>
-                  <img src="" alt="user image" />
-                </picture>
               </div>
+          </div>
+
+          <div className='w-full text-center flex items-center'>
+              <UserImage />
           </div>
       </header>
 
-      <section className='flex mt-5 gap-2 mx-2'>
+      <section className='flex justify-center mt-5 gap-2 mx-2'>
           <Card>
             <div className='flex'>
               <p className='text-black font-semibold'>Entradas</p>
@@ -170,7 +192,7 @@ export default function page() {
           </Card>
       </section>
 
-      <section>
+      <section className='flex justify-center'>
         <ExpensesForm onEdit={onEdit} setOnEdit={setOnEdit} getExpenses={getExpenses}/>
       </section>
 

@@ -3,6 +3,7 @@
 import { getUser } from "@/auth/getUser";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { tokenService } from "@/auth/tokenService";
 
 
 export default function Home() {
@@ -10,6 +11,18 @@ export default function Home() {
   const router = useRouter();
 
   const [userName, setUserName] = useState('');
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const token = tokenService.get();
+
+    if (!token) {
+      router.push('/login');
+      return;
+    } else {
+      setLoading(false)
+    }
+  }, [router])
 
   useEffect(() => {
     const name = getUser.get()
@@ -17,6 +30,10 @@ export default function Home() {
       setUserName(name)
     }
   })
+
+  if (loading) {
+    return <div className="flex justify-center text-red-500 font-bold text-9xl">Loading...</div>
+  }
 
   return (
     <main className="w-full h-screen">
