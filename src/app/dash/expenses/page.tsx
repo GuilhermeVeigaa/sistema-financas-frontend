@@ -7,18 +7,27 @@ import { FaRegArrowAltCircleUp, FaRegArrowAltCircleDown, FaDollarSign } from 're
 import ExpensesForm from '@/components/ExpensesForm';
 import ExpensesGrid from '@/components/ExpensesGrid';
 import axios from 'axios';
+import { tokenService } from '@/auth/tokenService';
+
 
 interface Expense {
   desc: string;
   value: number;
+  type: string
 }
 
 
 export default function page() {
 
   const [userName, setUserName] = useState('');
-  const [expenses, setExpenses] = useState<Expense[]>([])
-  const [onEdit, setOnEdit] = useState(null)
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [onEdit, setOnEdit] = useState(null);
+
+  const [valuesByType, SetValuesByType] = useState<{ [key: string]: number[] }>({});
+  const [totalByType, setTotalByType] = useState<{ [key: string]: number }>({});
+  
+  const [entrada, setEntrada] = useState(0);
+  const [saida, setSaida] = useState(0);
 
   useEffect(() => {
     const name = getUser.get()
@@ -29,16 +38,68 @@ export default function page() {
 
   const getExpenses = async () => {
     try {
-      const res = await axios.get<Expense[]>("http://localhost:8800/expenses")
-      setExpenses(res.data.sort((a, b) => a.desc.localeCompare(b.desc)))
+
+      const token = tokenService.get()
+
+      if (!token) {
+        throw new Error("Token não encontrado")
+      };
+
+      const res = await axios.get<Expense[]>("http://localhost:8800/expenses", {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+      )
+      const sortedExpenses = res.data.sort((a, b) => a.desc.localeCompare(b.desc))
+      setExpenses(sortedExpenses)
+
+      const valuesByType: { [key: string]: number[] } = {};
+      sortedExpenses.forEach(expenses => {
+        if(!valuesByType[expenses.type]) {
+          valuesByType[expenses.type] = [];
+        }
+        valuesByType[expenses.type].push(expenses.value);
+      });
+
+      SetValuesByType(valuesByType);
     } catch (err) {
       console.error("erro ao carreagar despesas", err)
     }
   }
 
+  const calculateTotalValuesByType = (valuesByType: { [key: string]: number[] }) => {
+    const totals: { [key: string]: number } = {}
+
+    for (const type in valuesByType) {
+      totals[type] = valuesByType[type].reduce((acc, curr) => acc + curr, 0);
+    }
+
+    setTotalByType(totals);
+  }
+
   useEffect(() => {
     getExpenses()
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    calculateTotalValuesByType(valuesByType)
+  }, [valuesByType]);
+
+  useEffect(() => {
+    let totalEntrada = 0;
+    let totalSaida = 0;
+    expenses.forEach(expenses => {
+      if (expenses.type === "entrada") {
+        totalEntrada += expenses.value;
+      } else if (expenses.type === "saida") {
+        totalSaida += expenses.value;
+      }
+    });
+
+    setEntrada(totalEntrada);
+    setSaida(totalSaida);
+  }, [expenses]);
 
   return (
     <main>
@@ -76,7 +137,7 @@ export default function page() {
             </div>
 
             <div className='text-center pt-5'>
-              <span className='font-bold text-lg text-green-600'>Valor</span>
+              <span className='font-bold text-lg text-green-600'>{entrada}</span>
             </div>
           </Card>
 
@@ -90,7 +151,7 @@ export default function page() {
             </div>
 
             <div className='text-center pt-5'>
-              <span className='font-bold text-lg text-red-700'>Valor</span>
+              <span className='font-bold text-lg text-red-700'>{saida * -1}</span>
             </div>
           </Card>
 
@@ -104,7 +165,7 @@ export default function page() {
             </div>
 
             <div className='text-center pt-5'>
-              <span className='font-bold text-lg text-black'>Valor</span>
+              <span className='font-bold text-lg text-black'>{entrada + (saida * -1)}</span>
             </div>
           </Card>
       </section>
@@ -114,7 +175,7 @@ export default function page() {
       </section>
 
       <section>
-        <ExpensesGrid expenses={expenses} setExpenses={setExpenses} setOnEdit={setOnEdit}/>
+        <ExpensesGrid expenses={expenses} setExpenses={setExpenses} setOnEdit={setOnEdit} getExpenses={getExpenses} />
       </section>
     </main>
   )

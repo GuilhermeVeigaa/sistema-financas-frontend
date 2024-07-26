@@ -19,8 +19,6 @@ export const authService = {
             
             const body = await respostaDoServidor.json();
 
-            console.log(body)
-
             tokenService.save(body.token)
             getUser.save(body.user.name)
         })
@@ -47,11 +45,17 @@ export const authService = {
     },
 
     async addExpenses({ desc, value, type }: any) {
-        console.log("sending data", {desc, value, type});
+        const token = tokenService.get();
+
+        if(!token) {
+            throw new Error("Token não encontrado")
+        };
+
         return fetch("http://localhost:8800/expenses", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
                 desc,
@@ -67,12 +71,18 @@ export const authService = {
     },
 
     async updateExpenses({ desc, value, type,id }: any){
-        console.log("Sending data", { desc, value });
+
+        const token = tokenService.get();
+
+        if(!token) {
+            throw new Error("Token não encontrado")
+        };
 
         return fetch("http://localhost:8800/expenses" + id, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
                 desc,

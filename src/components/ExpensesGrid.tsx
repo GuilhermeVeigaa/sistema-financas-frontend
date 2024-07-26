@@ -1,17 +1,32 @@
 import axios from "axios"
 import { FaTrash, FaEdit } from "react-icons/fa"
-export default function ExpensesGrid({ expenses, setExpenses, setOnEdit }: any) {
+import { tokenService } from "@/auth/tokenService"
+
+
+export default function ExpensesGrid({ expenses, setExpenses, setOnEdit, getExpenses }: any) {
 
     const handleEdit = (item: any) => {
         setOnEdit(item)
     }    
 
   const handleDelete = async (id: any) => {
-    await axios.delete("http://localhost:8800/expenses" + id)
+
+      const token = tokenService.get()
+
+      if (!token) {
+        throw new Error("Token não encontrado")
+      };
+
+    await axios.delete("http://localhost:8800/expenses" + id, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
     .then(() => {
         const newArray = expenses.filter((expenses: any) => expenses.id !== id)
 
         setExpenses(newArray)
+        getExpenses()
     })
     .catch(({ data }) => {throw new Error(data)})
 
